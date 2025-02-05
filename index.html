@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Creative Portfolio</title>
+   <script src="https://cdn.tailwindcss.com"></script>
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
+   <style>
+      @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+      :root {
+         --neon-blue: #00fff2;
+         --neon-purple: #b800ff;
+         --dark-bg: #0a0a0a;
+         --light-bg: #f0f0f0;
+         --dark-text: #0a0a0a;
+         --light-text: #ffffff;
+      }
+
+      #background-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -1;
+        pointer-events: none;
+    }
+
+    /* Update the home section styles */
+    #home {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        padding-left: 4rem; /* 16px * 4 = 64px, matching pl-16 */
+        margin-top: 0; /* Remove any top margin */
+        position: relative; /* Add this */
+    }
+
+    /* Optional: Add this if you want to ensure all sections maintain proper spacing */
+    section {
+        position: relative;
+        z-index: 1;
+    }
+
+      body {
+         font-family: 'Space Grotesk', sans-serif;
+         transition: background-color 0.3s, color 0.3s;
+      }
+
+      body.light-mode {
+         background-color: var(--light-bg);
+         color: var(--dark-text);
+      }
+
+      body.dark-mode {
+         background-color: var(--dark-bg);
+         color: var(--light-text);
+      }
+
+      .cyber-border {
+         position: relative;
+         border: 2px solid var(--neon-blue);
+         box-shadow: 0 0 10px var(--neon-blue),
+            inset 0 0 10px var(--neon-blue);
+         transition: all 0.3s ease;
+      }
+
+      .light-mode .cyber-border {
+         border-color: var(--neon-purple);
+         box-shadow: 0 0 10px var(--neon-purple),
+            inset 0 0 10px var(--neon-purple);
+      }
+
+      .cyber-text {
+         text-shadow: 0 0 10px var(--neon-blue),
+            0 0 20px var(--neon-blue);
+      }
+
+      .light-mode .cyber-text {
+         text-shadow: 0 0 10px var(--neon-purple),
+            0 0 20px var(--neon-purple);
+      }
+
+      .glitch {
+         position: relative;
+         animation: glitch 500ms infinite;
+      }
+
+      .cyber-grid {
+         background-image: linear-gradient(var(--neon-blue) 1px, transparent 1px),
+            linear-gradient(90deg, var(--neon-blue) 1px, transparent 1px);
+         background-size: 20px 20px;
+         background-color: rgba(0, 255, 242, 0.1);
+      }
+
+      .light-mode .cyber-grid {
+         background-image: linear-gradient(var(--neon-purple) 1px, transparent 1px),
+            linear-gradient(90deg, var(--neon-purple) 1px, transparent 1px);
+         background-color: rgba(184, 0, 255, 0.1);
+      }
+
+      .clip-path-card {
+         clip-path: polygon(0 0, 100% 0, 100% 85%, 85% 100%, 0 100%);
+      }
+
+      #search-box {
+         background: rgba(0, 255, 242, 0.1);
+         border: 1px solid var(--neon-blue);
+      }
+
+      .light-mode #search-box {
+         background: rgba(184, 0, 255, 0.1);
+         border: 1px solid var(--neon-purple);
+      }
+       
+      .form-input {
+            background: rgba(0, 255, 242, 0.05);
+            border: 2px solid var(--neon-blue);
+            color: var(--light-text);
+            padding: 1rem 1.5rem;
+            width: 100%;
+            margin-bottom: 1rem;
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            box-shadow: 0 0 15px var(--neon-blue),
+                        inset 0 0 5px var(--neon-blue);
+            background: rgba(0, 255, 242, 0.1);
+        }
+
+        .light-mode .form-input {
+            background: rgba(184, 0, 255, 0.05);
+            border: 2px solid var(--neon-purple);
+            color: var(--dark-text);
+        }
+
+        .light-mode .form-input:focus {
+            box-shadow: 0 0 15px var(--neon-purple),
+                        inset 0 0 5px var(--neon-purple);
+            background: rgba(184, 0, 255, 0.1);
+        }
+
+        .contact-wrapper {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 768px) {
+            .contact-wrapper {
+                grid-template-columns: 3fr 2fr;
+            }
+        }
+
+      @keyframes glitch {
+         0% {
+            transform: skew(0deg);
+         }
+
+         20% {
+            transform: skew(-2deg);
+         }
+
+         40% {
+            transform: skew(2deg);
+         }
+
+         60% {
+            transform: skew(-2deg);
+         }
+
+         80% {
+            transform: skew(2deg);
+         }
+
+         100% {
+            transform: skew(0deg);
+         }
+      }
+   </style>
+</head>
+
+<body class="dark-mode">
+   <canvas id="background-canvas"></canvas>
+
+   <!-- Theme Toggle & Search -->
+   <div class="fixed top-4 right-4 flex gap-4 z-50">
+      <div class="cyber-border p-2 rounded-full cursor-pointer" id="theme-toggle">
+         <i class="fas fa-moon text-xl cyber-text"></i>
+      </div>
+      <div class="cyber-border p-2 rounded-lg">
+         <input type="text" id="search-box" placeholder="Search projects..."
+            class="bg-transparent px-4 py-1 w-48 focus:outline-none text-white">
+      </div>
+   </div>
+
+   <!-- Navigation -->
+   <nav
+      class="fixed top-0 left-0 w-16 h-screen flex flex-col items-center justify-center space-y-8 cyber-border bg-black/50 backdrop-blur-lg z-40">
+      <a href="#home" class="text-2xl cyber-text hover:scale-125 transition-transform">
+         <i class="fas fa-home"></i>
+      </a>
+      <a href="#about" class="text-2xl cyber-text hover:scale-125 transition-transform">
+         <i class="fas fa-user"></i>
+      </a>
+      <a href="#portfolio" class="text-2xl cyber-text hover:scale-125 transition-transform">
+         <i class="fas fa-code"></i>
+      </a>
+      <a href="#services" class="text-2xl cyber-text hover:scale-125 transition-transform">
+         <i class="fas fa-cogs"></i>
+      </a>
+      <a href="#blog" class="text-2xl cyber-text hover:scale-125 transition-transform">
+         <i class="fas fa-blog"></i>
+      </a>
+      <a href="#contact" class="text-2xl cyber-text hover:scale-125 transition-transform">
+         <i class="fas fa-envelope"></i>
+      </a>
+   </nav>
+
+   <!-- Hero Section -->
+   <section id="home" class="min-h-screen flex items-center justify-center pl-16">
+      <div class="container mx-auto px-6 text-center">
+         <h1 class="text-6xl md:text-8xl font-bold mb-8 glitch">Wahyu Andika Rahadi</h1>
+         <p class="text-xl md:text-2xl cyber-text mb-12">Frontend Developer & Backend Developer</p>
+         <div class="cyber-grid p-8 inline-block">
+            <a href="#portfolio"
+               class="inline-block cyber-border px-8 py-4 text-lg font-bold hover:scale-105 transition-transform">
+               EXPLORE MY WORK_
+            </a>
+         </div>
+      </div>
+   </section>
+
+   <!-- About Section -->
+   <section id="about" class="min-h-screen flex items-center pl-16 py-20">
+      <div class="container mx-auto px-6">
+         <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div class="cyber-border p-8 clip-path-card" data-tilt>
+               <img src="/api/placeholder/400/400" alt="Profile" class="w-full h-auto">
+            </div>
+            <div class="space-y-6">
+               <h2 class="text-4xl font-bold cyber-text">WHO AM I_</h2>
+               <p class="text-lg">Wahyu Andika Rahadi adalah seorang pengembang perangkat lunak yang tengah menempuh pendidikan di SMKN 69 Jakarta, dengan spesialisasi dalam pengembangan frontend dan backend. Dengan keahlian yang mendalam di React dan Laravel, Wahyu memiliki kemampuan untuk membangun aplikasi web yang modern, responsif, dan skalabel.
+
+                  Berpengalaman dalam membangun antarmuka interaktif serta sistem backend yang efisien, Wahyu selalu berorientasi pada solusi yang optimal dan performa tinggi. Dengan semangat belajar yang tinggi dan komitmen terhadap teknologi, ia siap menghadapi tantangan dalam industri pengembangan perangkat lunak.</p>
+               <div class="grid grid-cols-2 gap-4">
+                  <div class="cyber-border p-4 text-center">
+                     <i class="fas fa-code text-3xl mb-2 cyber-text"></i>
+                     <p>Front-end Developer</p>
+                  </div>
+                  <div class="cyber-border p-4 text-center">
+                     <i class="fas fa-server text-3xl mb-2 cyber-text"></i>
+                     <p>Back-end Developer</p>
+                  </div>
+                  <div class="cyber-border p-4 text-center">
+                     <i class="fas fa-chart-line text-3xl mb-2 cyber-text"></i>
+                     <p>Data Analyst</p>
+                  </div>
+                  <div class="cyber-border p-4 text-center">
+                     <i class="fas fa-paint-brush text-3xl mb-2 cyber-text"></i>
+                     <p>Creative Design</p>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </section>
+
+   <!-- Portfolio Section -->
+   <section id="portfolio" class="min-h-screen pl-16 py-20">
+      <div class="container mx-auto px-6">
+         <h2 class="text-4xl font-bold cyber-text mb-12 text-center">PROJECTS_</h2>
+         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="projects-grid">
+            <!-- Project Cards -->
+            <div class="cyber-border p-6 clip-path-card hover:scale-105 transition-transform" data-tilt
+               data-tags="react,webgl">
+               <img src="/api/placeholder/400/300" alt="Project 1" class="w-full h-48 object-cover mb-4">
+               <h3 class="text-xl font-bold mb-2 cyber-text">Neon Dreams</h3>
+               <p class="mb-4">A cyberpunk-inspired web experience</p>
+               <div class="flex flex-wrap gap-2">
+                  <span class="cyber-border px-3 py-1 text-sm">React</span>
+                  <span class="cyber-border px-3 py-1 text-sm">WebGL</span>
+               </div>
+            </div>
+
+            <div class="cyber-border p-6 clip-path-card hover:scale-105 transition-transform" data-tilt
+               data-tags="three.js,gsap">
+               <img src="/api/placeholder/400/300" alt="Project 2" class="w-full h-48 object-cover mb-4">
+               <h3 class="text-xl font-bold mb-2 cyber-text">Digital Horizon</h3>
+               <p class="mb-4">Interactive 3D portfolio showcase</p>
+               <div class="flex flex-wrap gap-2">
+                  <span class="cyber-border px-3 py-1 text-sm">Three.js</span>
+                  <span class="cyber-border px-3 py-1 text-sm">GSAP</span>
+               </div>
+            </div>
+
+            <div class="cyber-border p-6 clip-path-card hover:scale-105 transition-transform" data-tilt
+               data-tags="d3,svg">
+               <img src="/api/placeholder/400/300" alt="Project 3" class="w-full h-48 object-cover mb-4">
+               <h3 class="text-xl font-bold mb-2 cyber-text">Cyber Grid</h3>
+               <p class="mb-4">Futuristic data visualization</p>
+               <div class="flex flex-wrap gap-2">
+                  <span class="cyber-border px-3 py-1 text-sm">D3.js</span>
+                  <span class="cyber-border px-3 py-1 text-sm">SVG</span>
+               </div>
+            </div>
+         </div>
+      </div>
+   </section>
+
+   <!-- Services Section -->
+   <section id="services" class="min-h-screen pl-16 py-20">
+      <div class="container mx-auto px-6">
+         <h2 class="text-4xl font-bold cyber-text mb-12 text-center">SERVICES_</h2>
+         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="cyber-border p-8 hover:scale-105 transition-transform">
+               <i class="fas fa-laptop-code text-4xl mb-4 cyber-text"></i>
+               <h3 class="text-xl font-bold mb-4">Web Development</h3>
+               <p>Custom websites and web applications with modern technologies and frameworks.</p>
+            </div>
+            <div class="cyber-border p-8 hover:scale-105 transition-transform">
+               <i class="fas fa-mobile-alt text-4xl mb-4 cyber-text"></i>
+               <h3 class="text-xl font-bold mb-4">Mobile Apps</h3>
+               <p>Cross-platform mobile applications using React Native and Flutter.</p>
+            </div>
+            <div class="cyber-border p-8 hover:scale-105 transition-transform">
+               <i class="fas fa-paint-brush text-4xl mb-4 cyber-text"></i>
+               <h3 class="text-xl font-bold mb-4">UI/UX Design</h3>
+               <p>Creative and intuitive user interfaces with focus on user experience.</p>
+            </div>
+         </div>
+      </div>
+   </section>
+
+   <!-- Blog Section -->
+   <section id="blog" class="min-h-screen pl-16 py-20">
+      <div class="container mx-auto px-6">
+         <h2 class="text-4xl font-bold cyber-text mb-12 text-center">BLOG_</h2>
+         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <article class="cyber-border p-6 hover:scale-105 transition-transform">
+               <div class="mb-4">
+                  <img src="/api/placeholder/600/300" alt="Blog 1" class="w-full h-48 object-cover">
+               </div>
+               <h3 class="text-xl font-bold mb-2 cyber-text">The Future of Web Design</h3>
+               <p class="mb-4">Exploring upcoming trends in web development and design...</p>
+               <a href="#" class="cyber-text hover:underline">Read More_</a>
+            </article>
+            <article class="cyber-border p-6 hover:scale-105 transition-transform">
+               <div class="mb-4">
+                  <img src="/api/placeholder/600/300" alt="Blog 2" class="w-full h-48 object-cover">
+               </div>
+               <h3 class="text-xl font-bold mb-2 cyber-text">Creative Coding Techniques</h3>
+               <p class="mb-4">Advanced techniques for creating interactive web experiences...</p>
+               <a href="#" class="cyber-text hover:underline">Read More_</a>
+            </article>
+         </div>
+      </div>
+   </section>
+
+   <!-- Contact Section -->
+   <section id="contact" class="min-h-screen pl-16 py-20">
+      <div class="container mx-auto px-6">
+          <h2 class="text-4xl font-bold cyber-text mb-12 text-center">CONNECT_</h2>
+          <div class="contact-wrapper flex flex-col md:flex-row gap-8">
+              <!-- Form Section -->
+              <div class="cyber-border p-8 w-full md:w-1/2">
+                  <form id="contact-form" class="space-y-6">
+                      <input type="text" id="name" name="name" placeholder="YOUR NAME_" class="form-input" required>
+                      <input type="email" id="email" name="email" placeholder="YOUR EMAIL_" class="form-input" required>
+                      <textarea id="message" name="message" placeholder="YOUR MESSAGE_" class="form-input h-32 resize-none" required></textarea>
+                      <button type="submit" 
+                          class="cyber-border px-8 py-4 w-full text-lg font-bold hover:scale-105 transition-transform">
+                          SEND MESSAGE_
+                      </button>
+                  </form>
+              </div>
+              
+              <!-- Contact Info Section -->
+              <div class="cyber-border p-8 w-full md:w-1/2">
+                  <div class="space-y-8">
+                      <div class="flex items-center space-x-4 cyber-text">
+                          <i class="fas fa-envelope text-2xl"></i>
+                          <p>wahyuandikarahadi19@gmail.com</p>
+                      </div>
+                      <div class="flex items-center space-x-4 cyber-text">
+                          <i class="fas fa-phone text-2xl"></i>
+                          <p>+62 838-1692-7804</p>
+                      </div>
+                      <div class="flex items-center space-x-4 cyber-text">
+                          <i class="fas fa-map-marker-alt text-2xl"></i>
+                          <p>Indonesia, Jakarta, Jakarta Timur</p>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </section>
+   <!-- Footer -->
+   <footer class="pl-16 py-8 cyber-border-t">
+      <div class="container mx-auto px-6">
+         <div class="flex flex-col md:flex-row justify-between items-center">
+            <p>&copy; 2025 Wahyu Andika Rahadi. All rights reserved.</p>
+            <div class="flex space-x-4 mt-4 md:mt-0">
+               <a href="#" class="cyber-text text-xl hover:scale-125 transition-transform">
+                  <i class="fab fa-github"></i>
+               </a>
+               <a href="#" class="cyber-text text-xl hover:scale-125 transition-transform">
+                  <i class="fab fa-linkedin"></i>
+               </a>
+               <a href="#" class="cyber-text text-xl hover:scale-125 transition-transform">
+                  <i class="fab fa-twitter"></i>
+               </a>
+            </div>
+         </div>
+      </div>
+   </footer>
+
+   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+   <script>
+    (function() {
+        emailjs.init("DSfLqJnveZ7XpJG6w"); // Ganti dengan PUBLIC_KEY dari EmailJS
+    })();
+
+    document.getElementById('contact-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        emailjs.sendForm('service_8pc3zl7', 'template_g1qaz48', this)
+        .then(function() {
+            Swal.fire({
+                icon: 'success',
+                title: 'Pesan Terkirim!',
+                text: 'Pesan Anda telah terkirim kepada Wahyu Andika Rahadi.',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
+            document.getElementById('contact-form').reset();
+        }, function(error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal Mengirim!',
+                text: 'Silakan coba lagi nanti.',
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'OK'
+            });
+        });
+
+    });
+      // Theme Toggle
+      const themeToggle = document.getElementById('theme-toggle');
+      const body = document.body;
+      const themeIcon = themeToggle.querySelector('i');
+
+      themeToggle.addEventListener('click', () => {
+         body.classList.toggle('light-mode');
+         body.classList.toggle('dark-mode');
+         themeIcon.classList.toggle('fa-moon');
+         themeIcon.classList.toggle('fa-sun');
+      });
+
+      // Project Search
+      const searchBox = document.getElementById('search-box');
+      const projectsGrid = document.getElementById('projects-grid');
+      const projectCards = projectsGrid.querySelectorAll('[data-tags]');
+
+      searchBox.addEventListener('input', (e) => {
+         const searchTerm = e.target.value.toLowerCase();
+
+         projectCards.forEach(card => {
+            const tags = card.dataset.tags.toLowerCase();
+            if (tags.includes(searchTerm) || !searchTerm) {
+               card.style.display = 'block';
+            } else {
+               card.style.display = 'none';
+            }
+         });
+      });
+
+      // Initialize Vanilla Tilt
+      VanillaTilt.init(document.querySelectorAll("[data-tilt]"), {
+         max: 15,
+         speed: 400,
+         glare: true,
+         "max-glare": 0.5
+      });
+
+         // Update the Three.js background setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ 
+        canvas: document.getElementById('background-canvas'), 
+        alpha: true,
+        antialias: true 
+    });
+    
+    // Set renderer size to match viewport
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+
+    // Create grid of particles with more particles and larger spread
+    const particles = new THREE.BufferGeometry();
+    const particleCount = 2000; // Increased from 1000
+    const positions = new Float32Array(particleCount * 3);
+    const spread = 200; // Increased spread distance
+
+    for (let i = 0; i < particleCount * 3; i += 3) {
+        positions[i] = (Math.random() - 0.5) * spread;
+        positions[i + 1] = (Math.random() - 0.5) * spread;
+        positions[i + 2] = (Math.random() - 0.5) * spread;
+    }
+
+    particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const material = new THREE.PointsMaterial({
+        size: 0.2, // Slightly larger particles
+        color: 0x00fff2,
+        transparent: true,
+        opacity: 0.8
+    });
+
+    const particleSystem = new THREE.Points(particles, material);
+    scene.add(particleSystem);
+    camera.position.z = 100; // Moved camera back to see more particles
+
+    // Animation
+    function animate() {
+        requestAnimationFrame(animate);
+        particleSystem.rotation.x += 0.0005; // Slower rotation
+        particleSystem.rotation.y += 0.0005;
+        renderer.render(scene, camera);
+    }
+    animate();
+
+    // Improved window resize handler
+    function handleResize() {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+        
+        renderer.setSize(width, height);
+        renderer.setPixelRatio(window.devicePixelRatio);
+    }
+
+    window.addEventListener('resize', handleResize);
+
+
+      // Smooth scroll for navigation
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+         anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+               behavior: 'smooth'
+            });
+         });
+      });
+
+      // Contact Form
+      const contactForm = document.getElementById('contact-form');
+      contactForm.addEventListener('submit', (e) => {
+         e.preventDefault();
+         // Add your form submission logic here
+         contactForm.reset();
+      });
+   </script>
+</body>
+
+</html>
